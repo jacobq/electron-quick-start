@@ -31,7 +31,6 @@
     "save": "^2.3.2",
     "sqlite3": "^4.0.0",
     "uuid": "^3.2.1",
-    "websocket": "^1.0.25",
-    "windows-build-tools": "^2.2.1"
+    "websocket": "^1.0.25"
   }
 }
