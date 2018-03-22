@@ -4,7 +4,8 @@
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "postinstall": "electron-builder install-app-deps"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -17,6 +18,20 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "~1.8.2"
+    "electron": "~1.8.2",
+    "electron-builder": "^20.5.1",
+    "electron-rebuild": "^1.7.3"
+  },
+  "dependencies": {
+    "build": "^0.1.4",
+    "clean": "^4.0.2",
+    "jquery": "^3.3.1",
+    "node-gyp": "^3.6.2",
+    "portscanner": "^2.1.1",
+    "save": "^2.3.2",
+    "sqlite3": "^4.0.0",
+    "uuid": "^3.2.1",
+    "websocket": "^1.0.25",
+    "windows-build-tools": "^2.2.1"
   }
 }
