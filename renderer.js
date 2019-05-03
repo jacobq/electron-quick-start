@@ -18,6 +18,11 @@ function removeMenu() {
   }
 }
 
+function setMenuNull() {
+  mainWindow.setMenu(null);
+}
+
 document.querySelector('button#show').addEventListener('click', e => toggleMenuBarVisibility(true));
 document.querySelector('button#hide').addEventListener('click', e => toggleMenuBarVisibility(false));
 document.querySelector('button#remove').addEventListener('click', removeMenu);
+document.querySelector('button#set-null').addEventListener('click', setMenuNull);
