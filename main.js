@@ -15,6 +15,17 @@ function createWindow () {
     }
   })
 
+  if (typeof mainWindow.removeMenu === 'function') {
+    console.log('About to call removeMenu')
+    // The following line doesn't seem to work:
+    mainWindow.removeMenu()
+  }
+
+  console.log('About to call setMenuBarVisibility')
+  // The following line seems to work-around the above problem:
+  mainWindow.setMenuBarVisibility(false)
+
+  console.log('About to load index.html')
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
 
