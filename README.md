@@ -21,8 +21,8 @@ Testing 20.195 MiB, 20679.98 KiB, 21176300 bytes
 Testing 20.195 MiB, 20679.982 KiB, 21176302 bytes
 Testing 20.195 MiB, 20679.984 KiB, 21176304 bytes
 Found unexpected number of bytes: 0 !== 21176304
-VM106:75 Got bad result for bytes=21176304 (previously tested size was 21176302 bytes)
-VM106:78 testLocalStorage finished
+Got bad result for bytes=21176304 (previously tested size was 21176302 bytes)
+testLocalStorage finished
 ```
 
 You can (hopefully obviously) adjust the values in main.js to alter the test to your liking.
