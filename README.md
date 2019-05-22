@@ -3,6 +3,9 @@
 This example is based on [`electron-quick-start`](https://github.com/electron/electron-quick-start).
 To run:
 
+* `git clone https://github.com/jacobq/electron-quick-start.git`
+* `cd electron-quick-start`
+* `git checkout storageLimit`
 * `npm install`
 * `npm run start`
 
