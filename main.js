@@ -86,14 +86,11 @@ function testLocalStorage() {
   let result = null
   let iteration = 0
   let bytes = initialBytes
-  new Array(maxIterations).fill(0).reduce((p, zero) => {
+  new Array(Math.max(maxIterations, 1)).fill(0).reduce((p, zero) => {
       return p.then((lastBytes) => new Promise((resolve, reject) => {
         iteration++
         console.log(`[${iteration}] Testing ${formatSizes(bytes)}`)
-        if (iteration > maxIterations) {
-          reject(`Reached maximum number of iterations (${maxIterations})`)
-        }
-        else if (getElapsedTime() > maxTime) {
+        if (getElapsedTime() > maxTime) {
           reject(`Reached maximum execution time (${maxTime/1000}s)`)
         }
         else {
