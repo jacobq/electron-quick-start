@@ -45,46 +45,84 @@ function createWindow () {
 }
 
 function testLocalStorage() {
-  const maxIterations = 10
-  const maxTime = 5 * 60 * 1000;
-  // We'll try increasing by 512KiB each time (this value must be even since we're testing with UTF-16 strings)
-  //const stepBytes = 512*1024
-  const stepBytes = 2*1024*1024
-
   console.log('testLocalStorage started')
   localStorage.clear()
 
   const key = 'testVal'
-  const initBytes = 10*1024*1024
-  let bigArray = new Array(initBytes/2).fill('x')
-
+  const delay = 10
+  const initialBytes = 20*1024*1024 + 199*1024 + 998
+  const stepBytes = 2
+  const maxIterations = 100
+  const maxTime = 5 * 60 * 1000
   const startTime = Date.now()
   const getElapsedTime = () => Date.now() - startTime;
 
+  function timeout(ms) {
+    let resolve;
+    const promise = new Promise((_resolve) => { resolve = _resolve });
+    setTimeout(() => { resolve() }, ms)
+
+    return promise;
+  }
+
+  function write(bytes) {
+      // Note: localStorage is synchronous from the script's perspective
+      //       but the underlying persistence may not be. In other words,
+      //       everything might look fine until a page refresh.
+      localStorage.setItem(key, new Array(bytes/2).fill('x').join(''))
+  }
+
+  function countBytes() {
+      return (localStorage.getItem(key) || "").length*2
+  }
+
+  function formatSizes(bytes) {
+    const round = x => Math.round(1000*x) / 1000
+    const KiB = bytes/1024
+    const MiB = KiB/1024
+    return `${round(MiB)} MiB, ${round(KiB)} KiB, ${bytes} bytes`
+  }
+
   let result = null
   let iteration = 0
-  do {
-      iteration++
-      bigArray = bigArray.concat(new Array(stepBytes/2).fill('x'))
-
-      localStorage.setItem(key, bigArray.join(''))
-      result = localStorage.getItem(key)
-      console.log(`[${iteration}] ${bigArray.length*2/1024} KiB`,
-        "result === null -->", result === null,
-        "result === '' -->", result === ''
-      )
-      //console.log(result)
-  } while (result && iteration < maxIterations && getElapsedTime() < maxTime)
-
-  if (iteration >= maxIterations) {
-    console.log(`Reached iteration limit (${iteration})`)
-  }
-
-  if (getElapsedTime() >= maxTime) {
-    console.log(`Reached time limit (${maxTime/1000}s)`)
-  }
-
-  console.log('testLocalStorage finished');
+  let bytes = initialBytes
+  new Array(maxIterations).fill(0).reduce((p, zero) => {
+      return p.then((lastBytes) => new Promise((resolve, reject) => {
+        iteration++
+        console.log(`[${iteration}] Testing ${formatSizes(bytes)}`)
+        if (iteration > maxIterations) {
+          reject(`Reached maximum number of iterations (${maxIterations})`)
+        }
+        else if (getElapsedTime() > maxTime) {
+          reject(`Reached maximum execution time (${maxTime/1000}s)`)
+        }
+        else {
+          write(bytes)
+          timeout(delay).then(() => {
+            const result = countBytes()
+            if (result !== bytes) {
+              console.warn(`Found unexpected number of bytes: ${result} !== ${bytes}`)
+            }
+            if (result < 1) {
+              reject(`Got bad result for bytes=${bytes} (previously tested size was ${bytes - stepBytes} bytes)`)
+            }
+            else {
+              bytes += stepBytes
+              resolve(bytes)
+            }
+          })
+        }
+      }))
+  }, Promise.resolve(0))
+  .then(bytes => {
+    console.log(`Did not find limit (tried up to ${bytes} bytes)`)
+  })
+  .catch(message => {
+    console.log(message)
+  })
+  .finally(() => {
+    console.log('testLocalStorage finished');
+  })
 }
 
 
