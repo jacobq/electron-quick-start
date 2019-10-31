@@ -49,10 +49,10 @@ function testLocalStorage() {
   console.log('testLocalStorage started')
   localStorage.clear()
 
-  const key = 'testVal'
-  const delay = 10
-  const initialBytes = 20*1024*1024 + 199*1024 + 998
-  const stepBytes = 2
+  const key = 'localStorageLimitTest'
+  const delay = 0
+  const initialBytes = 10*1024*1024 + 99*1024 + 1010
+  const stepBytes = 1
   const maxIterations = 100
   const maxTime = 5 * 60 * 1000
   const startTime = Date.now()
@@ -61,30 +61,26 @@ function testLocalStorage() {
   function timeout(ms) {
     let resolve;
     const promise = new Promise((_resolve) => { resolve = _resolve });
-    setTimeout(() => { resolve() }, ms)
+    setTimeout(resolve, ms)
 
     return promise;
   }
 
   function write(bytes) {
-      // Note: localStorage is synchronous from the script's perspective
-      //       but the underlying persistence may not be. In other words,
-      //       everything might look fine until a page refresh.
-      localStorage.setItem(key, new Array(bytes/2).fill('x').join(''))
+      localStorage.setItem(key, 'x'.repeat(bytes - key.length))
   }
 
   function countBytes() {
-      return (localStorage.getItem(key) || "").length*2
+      return new Blob([key, localStorage.getItem(key)]).size
   }
 
-  function formatSizes(bytes) {
-    const round = x => Math.round(1000*x) / 1000
-    const KiB = bytes/1024
-    const MiB = KiB/1024
-    return `${round(MiB)} MiB, ${round(KiB)} KiB, ${bytes} bytes`
+  function formatSizes(totalBytes) {
+    const MiB = Math.floor(totalBytes/1024/1024);
+    const KiB = Math.floor((totalBytes-1024*1024*MiB)/1024);
+    const B = totalBytes - 1024*(KiB + 1024*MiB);
+    return `total=${totalBytes} bytes = ${MiB} MiB + ${KiB} KiB + ${B} bytes`
   }
 
-  let result = null
   let iteration = 0
   let bytes = initialBytes
   new Array(Math.max(maxIterations, 1)).fill(0).reduce((p, zero) => {
@@ -96,12 +92,15 @@ function testLocalStorage() {
         }
         else {
           write(bytes)
+          // Note: localStorage is synchronous from the script's perspective
+          //       but the underlying persistence may not be. In other words,
+          //       everything might look fine until a page refresh.
           timeout(delay).then(() => {
             const result = countBytes()
             if (result !== bytes) {
               console.warn(`Found unexpected number of bytes: ${result} !== ${bytes}`)
             }
-            if (result < 1) {
+            if (result < initialBytes) {
               reject(`Got bad result for bytes=${bytes} (previously tested size was ${bytes - stepBytes} bytes)`)
             }
             else {
