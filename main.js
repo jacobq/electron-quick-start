@@ -70,7 +70,8 @@ function testLocalStorage() {
   }
 
   function countBytes() {
-      return new Blob([key, localStorage.getItem(key)]).size
+      const s = localStorage.getItem(key);
+      return !s ? 0 : new Blob([key, s]).size;
   }
 
   function formatSizes(totalBytes) {

@@ -30,7 +30,7 @@ testLocalStorage started
 [13] Testing total=10588158 bytes = 10 MiB + 99 KiB + 1022 bytes
 [14] Testing total=10588159 bytes = 10 MiB + 99 KiB + 1023 bytes
 [15] Testing total=10588160 bytes = 10 MiB + 100 KiB + 0 bytes
-Found unexpected number of bytes: 21 !== 10588160
+Found unexpected number of bytes: 0 !== 10588160
 Got bad result for bytes=10588160 (previously tested size was 10588159 bytes)
 testLocalStorage finished
 ```
