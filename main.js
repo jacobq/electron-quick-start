@@ -22,6 +22,24 @@ function createWindow () {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
+  mainWindow.webContents.once('did-finish-load', async function() {
+    const options = {
+      marginsType: 0,
+      pageSize: 'Letter',
+      printBackground: true,  // CSS backgrounds, not "print in the background"
+      printSelectionOnly: false,
+      landscape: false
+    };
+    console.log('Attempting to print to PDF with options', options)
+    try {
+      const pdfData = await mainWindow.webContents.printToPDF(options)
+      console.log('Got PDF data -->', pdfData)
+    } catch(e) {
+      console.error('Call to printToPDF threw exception', e)
+    }
+  });
+
+
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
     // Dereference the window object, usually you would store windows
